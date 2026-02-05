@@ -8,6 +8,8 @@ import {
   CheckCircleIcon,
   ClockIcon
 } from '@heroicons/react/24/solid';
+import ActivityChart from '../components/Dashboard/ActivityChart';
+import AnimatedNumber from '../components/common/AnimatedNumber';
 
 const StatCard = ({ title, value, subtext, icon: Icon, color, trend }) => (
   <div className="glass-panel p-6 card-hover">
@@ -161,22 +163,22 @@ export default function Dashboard() {
           <div className="glass-panel p-4 mt-6">
             <div className="flex items-center justify-between mb-2">
               <span className="text-white font-medium">Level {level}</span>
-              <span className="text-gray-400 text-sm">{xp}/{xpToNext} XP</span>
+              <span className="text-gray-400 text-sm">
+                <AnimatedNumber value={xp} />/{xpToNext} XP
+              </span>
             </div>
             <div className="xp-bar">
               <div className="xp-fill" style={{ width: `${progressPercent}%` }} />
             </div>
             <p className="text-xs text-gray-500 mt-2">
-              До Level {level + 1} осталось {xpToNext - xp} XP
+              До Level {level + 1} осталось <AnimatedNumber value={xpToNext - xp} /> XP
             </p>
           </div>
         </div>
 
         <div className="lg:col-span-2 glass-panel p-6">
           <h3 className="text-xl font-semibold text-white mb-6">График активности</h3>
-          <div className="h-64 flex items-center justify-center text-gray-500">
-            📊 Тут будет график (нужно установить recharts)
-          </div>
+          <ActivityChart />
         </div>
       </div>
     </div>

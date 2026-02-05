@@ -9,6 +9,7 @@ import {
   FireIcon
 } from '@heroicons/react/24/outline';
 import { useGame } from '../../context/GameContext';
+import AnimatedNumber from '../common/AnimatedNumber';
 
 const navItems = [
   { path: '/', icon: HomeIcon, label: 'Dashboard', color: 'text-blue-400' },
@@ -45,8 +46,8 @@ export default function Sidebar() {
           />
         </div>
         <div className="flex justify-between text-xs text-gray-500">
-          <span>{xp} XP</span>
-          <span>{xpToNext} XP</span>
+          <span><AnimatedNumber value={xp} /> XP</span>
+          <span><AnimatedNumber value={xpToNext} /> XP</span>
         </div>
       </div>
       

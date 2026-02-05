@@ -1,5 +1,8 @@
 
 import React, { createContext, useContext, useReducer, useEffect, useState } from 'react';
+import { playXpSound, playLevelUpSound, playQuestCompleteSound } from '../utils/sounds';
+import { triggerLevelUpConfetti, triggerQuestCompleteConfetti, triggerAllQuestsConfetti } from '../utils/confetti';
+
 
 const GameContext = createContext();
 
@@ -138,7 +141,20 @@ export function GameProvider({ children }) {
   }, [state, isLoaded]);
   
   const addXp = (amount, source) => {
+    const prevLevel = state.level;
     dispatch({ type: 'ADD_XP', payload: amount });
+    
+    // Звук при получении XP
+    playXpSound();
+    
+    // Проверяем, был ли level up
+    setTimeout(() => {
+      if (state.level > prevLevel) {
+        playLevelUpSound();
+        triggerLevelUpConfetti(); // ← КОНФЕТТИ ПРИ LEVEL UP
+      }
+    }, 100);
+    
     console.log(`+${amount} XP от ${source}`);
   };
   
@@ -146,11 +162,14 @@ export function GameProvider({ children }) {
     const quest = state.dailyQuests.quests.find(q => q.id === questId);
     if (quest && !quest.completed) {
       dispatch({ type: 'COMPLETE_QUEST', payload: questId });
+      playQuestCompleteSound(); // ← ДОБАВИТЬ
+      triggerQuestCompleteConfetti(); // ← КОНФЕТТИ ПРИ КВЕСТЕ
       addXp(quest.xp, 'daily_quest');
       
       const remaining = state.dailyQuests.quests.filter(q => q.id !== questId && !q.completed);
       if (remaining.length === 0) {
         addXp(100, 'all_quests_complete');
+        setTimeout(() => triggerAllQuestsConfetti(), 500); // ← БОЛЬШЕ КОНФЕТТИ ЗА ВСЕ КВЕСТЫ
         dispatch({ type: 'UPDATE_STREAK', payload: { type: 'quests', date: new Date().toDateString() } });
       }
     }

@@ -8,6 +8,11 @@ export default function Settings() {
     addXp(100, 'cheat');
   };
 
+  const resetDailyQuests = () => {
+    localStorage.removeItem('personalOS_game');
+    window.location.reload();
+  };
+
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold text-white">Настройки ⚙️</h1>
@@ -45,9 +50,14 @@ export default function Settings() {
           <p>XP: {xp}</p>
           <p>Achievements: {achievements.length}</p>
         </div>
-        <button onClick={cheatAddXp} className="btn-ghost text-sm">
-          +100 XP (для теста)
-        </button>
+        <div className="flex gap-4">
+          <button onClick={cheatAddXp} className="btn-ghost text-sm">
+            +100 XP
+          </button>
+          <button onClick={resetDailyQuests} className="btn-primary text-sm">
+            Новый день (сбросить всё)
+          </button>
+        </div>
       </div>
     </div>
   );
