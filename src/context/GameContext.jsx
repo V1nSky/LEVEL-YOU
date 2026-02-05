@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+
+import React, { createContext, useContext, useReducer, useEffect, useState } from 'react';
 
 const GameContext = createContext();
 
@@ -13,7 +14,7 @@ const initialState = {
   },
   achievements: [],
   dailyQuests: {
-    date: new Date().toDateString(),
+    date: null,
     quests: [
       { id: 1, text: 'Проверить FunPay', completed: false, xp: 30 },
       { id: 2, text: 'Выучить 10 слов', completed: false, xp: 50 },
@@ -116,30 +117,25 @@ function gameReducer(state, action) {
 
 export function GameProvider({ children }) {
   const [state, dispatch] = useReducer(gameReducer, initialState);
+  const [isLoaded, setIsLoaded] = useState(false);
   
   useEffect(() => {
     const saved = localStorage.getItem('personalOS_game');
     if (saved) {
-      dispatch({ type: 'LOAD_STATE', payload: JSON.parse(saved) });
+      const parsed = JSON.parse(saved);
+      if (!parsed.dailyQuests?.date) {
+        parsed.dailyQuests.date = new Date().toDateString();
+      }
+      dispatch({ type: 'LOAD_STATE', payload: parsed });
     }
+    setIsLoaded(true);
   }, []);
   
   useEffect(() => {
-    localStorage.setItem('personalOS_game', JSON.stringify(state));
-  }, [state]);
-  
-  useEffect(() => {
-    const checkDate = () => {
-      const today = new Date().toDateString();
-      if (state.dailyQuests.date !== today) {
-        dispatch({ type: 'RESET_DAILY_QUESTS' });
-      }
-    };
-    
-    checkDate();
-    const interval = setInterval(checkDate, 60000);
-    return () => clearInterval(interval);
-  }, [state.dailyQuests.date]);
+    if (isLoaded) {
+      localStorage.setItem('personalOS_game', JSON.stringify(state));
+    }
+  }, [state, isLoaded]);
   
   const addXp = (amount, source) => {
     dispatch({ type: 'ADD_XP', payload: amount });
